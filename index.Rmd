@@ -1,6 +1,6 @@
 ---
 title: "IODS course project"
-author: "Antti V. Karkman"
+author: "Antti Karkman"
 output:
   html_document:
     theme: cosmo

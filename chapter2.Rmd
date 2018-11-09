@@ -1,15 +1,10 @@
 # Regression and model validation
 
-*Describe the work you have done this week and summarize your learning.*
-
-- Describe your work and results clearly. 
-- Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods
-- Assume the reader has no previous knowledge of your data or the more advanced methods you are using  
-
 __Reading the data in to R__  
-First set the working directory to the IODS folder and then read in the local tab separated copy 
+Load GGally (and ggplot2), set the working directory to the IODS folder and read in the local tab separated copy of the file
 
 ```{r}
+library(GGally)
 setwd("~/Work/IODS-project")
 analysis2014 <- read.table("data/analysis2014.txt", sep="\t", header=TRUE)
 ```
@@ -22,3 +17,28 @@ dim(analysis2014)
 The data has 166 rows and 7 columns. The columns show the age, gender, attitude and points of the 166 students.  
 In addition the data frame has three combined scores for deep learning, structured learning and strategic learning.  
 
+__Data overview__
+```{r, fig.width=10, fig.height=8}
+ggpairs(analysis2014, mapping = aes(col=gender, alpha=0.3), lower = list(combo = wrap("facethist", bins = 20)))
+summary(analysis2014)
+```
+Most of the variables have a close to normal distribution, except age that is closer to poisson distribution. There's twice as much women in the data set. 
+The strongest correlation can be seen between Attitude and Points.  
+
+__Regression model__
+```{r}
+lm1 <- lm(Points~Age+gender+Attitude, data=analysis2014)
+summary(lm1)
+lm2 <- lm(Points~Attitude, data=analysis2014)
+summary(lm2)
+```
+In the model with age, gender and attitude as explanatory variables, only attitude was significantly affecting the points.
+Age or gender do not affect the points.
+In the final model the attitude has significant positive correlation with points
+
+__Model diagnostics__
+```{r, fig.width=10, fig.height=8}
+par(mfrow=c(2,2))
+plot(lm2, which = c(1,2,5))
+```
+It can be seen from the diagnostic plots for the second model that there's no pattern in the residuals, so we have constant variance. There are some possible outliers as shown in the plot. The residuals have a fairly normal distribution, again excluding the some possible outliers. Also the leverage plot shows that few points could be outliers in this data set.

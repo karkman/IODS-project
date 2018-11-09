@@ -43,7 +43,7 @@ dim(analysis2014)
 
 # now set the working directory to the IODS folder and write the analysis2014 as a tab separated file to the data folder
 setwd("~/Work/IODS-project")
-write.table(analysis2014, file="data/analysis2014.txt", quote = FALSE, col.names = TRUE, row.names=FALSE)
+write.table(analysis2014, file="data/analysis2014.txt", sep="\t", quote = FALSE, col.names = TRUE, row.names=FALSE)
 
 # read the file back to R
 TMP <- read.table("data/analysis2014.txt", header=TRUE)

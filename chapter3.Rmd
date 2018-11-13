@@ -1,0 +1,10 @@
+---
+title: "Chapter 3"
+author: "Antti Karkman"
+date: "13 11 2018"
+output: html_document
+---
+
+# Data wrangling
+
+```{r}

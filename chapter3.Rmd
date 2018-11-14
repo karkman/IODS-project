@@ -5,6 +5,68 @@ date: "13 11 2018"
 output: html_document
 ---
 
-# Data wrangling
+# Data analysis for exercise 3
+
+_The needed libraries_
+```{r}
+library(GGally)
+library(randomForest)
+library(dplyr)
+```
+
+## Read in the data
+We start by reading in the data that was saved after the data wrangling part.
 
 ```{r}
+alc <- read.table("data/alc_data.txt", sep="\t", header=TRUE)
+colnames(alc)
+```
+
+The data consists of different attributes of students from two Portugese schools. Some of the data points in the two sets are by the same students and the data sets have been joined based on their answers. Only the students included in both questionnaires are included. 
+
+## Choose the variables and explore them
+The four variables I think could be affected or linked with high or low alcohol consumption are:  
+
+```{r}
+alc_rf <- randomForest(high_use ~ ., data=alc)
+varImpPlot(alc_rf)
+```
+  
+* sex (males tend to drink more than females) 
+* abcenses (The more you drink, the more you might be absent)
+* G3, the final grade (The consumption of alcohol could affect the final grade from the course)
+* goout, going out with friends (What else would you do with friends)
+```{r}
+ggpairs(alc[,c("high_use", "sex", "absences", "G3", "goout")],  aes(col=high_use, alpha=0.3), lower = list(combo = wrap("facethist", bins = 20)))
+table(high_use = alc$high_use, sex = alc$sex)
+boxplot(absences~high_use, data=alc, ylab="Number of absences", xlab="High use")
+boxplot(G3~high_use, data=alc, ylab="Final grade", xlab="High use")
+boxplot(goout~high_use, data=alc, ylab="Number of times going out w/ friends", xlab="High use")
+```
+
+There seems to be slightly more heavy users in male. Also the heavy users seem to have more absences, but their grades do not differ. Probably the strongest association can be seen in the times going out with friends. The more you go out with friends, the more likely you are a heavy user. 
+
+## Logistic regression
+
+```{r}
+m1 <- glm(high_use ~ sex + absences + G3 + goout, data = alc, family = "binomial")
+summary(m1)
+coef(m1)
+OR <- coef(m1) %>% exp()
+CI <- confint(m1) %>% exp()
+cbind(OR, CI)
+```
+
+From the model summary and the odds ratios and their coefficients we can see that the sex, number of absences and the number of times going out with friends are all associated with the hugh use of alcohol.  
+Males use more alcohol, the more absences the more likely to use more alcohol, and the more times going out with friends, the more likely to use more alcohol. 
+
+## Refined model and the predictive power
+
+```{r}
+m2 <- glm(high_use ~ sex + absences + goout, data = alc, family = "binomial")
+summary(m2)
+coef(m2)
+OR <- coef(m2) %>% exp()
+CI <- confint(m2) %>% exp()
+cbind(OR, CI)
+```

@@ -1,6 +1,6 @@
 # Regression and model validation
 
-__Reading the data in to R__  
+## Reading the data in to R
 Load GGally (and ggplot2), set the working directory to the IODS folder and read in the local tab separated copy of the file
 
 ```{r}
@@ -9,7 +9,7 @@ setwd("~/Work/IODS-project")
 analysis2014 <- read.table("data/analysis2014.txt", sep="\t", header=TRUE)
 ```
 
-__The structure and the dimensions of the data__  
+## The structure and the dimensions of the data
 ```{r}
 str(analysis2014)
 dim(analysis2014)
@@ -17,7 +17,7 @@ dim(analysis2014)
 The data has 166 rows and 7 columns. The columns show the age, gender, attitude and points of the 166 students.  
 In addition the data frame has three combined scores for deep learning, structured learning and strategic learning.  
 
-__Data overview__
+## Data overview
 ```{r, fig.width=10, fig.height=8}
 ggpairs(analysis2014, mapping = aes(col=gender, alpha=0.3), lower = list(combo = wrap("facethist", bins = 20)))
 summary(analysis2014)
@@ -25,7 +25,7 @@ summary(analysis2014)
 Most of the variables have a close to normal distribution, except age that is closer to poisson distribution. There's twice as much women in the data set. 
 The strongest correlation can be seen between Attitude and Points.  
 
-__Regression model__
+## Regression model
 ```{r}
 lm1 <- lm(Points~Age+gender+Attitude, data=analysis2014)
 summary(lm1)
@@ -36,7 +36,7 @@ In the model with age, gender and attitude as explanatory variables, only attitu
 Age or gender do not affect the points.
 In the final model the attitude has significant positive correlation with points
 
-__Model diagnostics__
+## Model diagnostics
 ```{r, fig.width=10, fig.height=8}
 par(mfrow=c(2,2))
 plot(lm2, which = c(1,2,5))

@@ -1,13 +1,6 @@
----
-title: "Chapter 3"
-author: "Antti Karkman"
-date: "13 11 2018"
-output: html_document
----
+# Logistic regression
 
-# Data analysis for exercise 3
-
-_The needed libraries_
+_The libraries needed in the analyses_
 ```{r}
 library(GGally)
 library(randomForest)
@@ -24,7 +17,7 @@ colnames(alc)
 
 The data consists of different attributes of students from two Portugese schools. Some of the data points in the two sets are by the same students and the data sets have been joined based on their answers. Only the students included in both questionnaires are included. 
 
-## Choose the variables and explore them
+## Choose the variables and explore them 
 The four variables I think could be affected or linked with high or low alcohol consumption are:  
 
 ```{r}
@@ -46,7 +39,7 @@ boxplot(goout~high_use, data=alc, ylab="Number of times going out w/ friends", x
 
 There seems to be slightly more heavy users in male. Also the heavy users seem to have more absences, but their grades do not differ. Probably the strongest association can be seen in the times going out with friends. The more you go out with friends, the more likely you are a heavy user. 
 
-## Logistic regression
+## Logistic model
 
 ```{r}
 m1 <- glm(high_use ~ sex + absences + G3 + goout, data = alc, family = "binomial")
@@ -60,7 +53,7 @@ cbind(OR, CI)
 From the model summary and the odds ratios and their coefficients we can see that the sex, number of absences and the number of times going out with friends are all associated with the hugh use of alcohol.  
 Males use more alcohol, the more absences the more likely to use more alcohol, and the more times going out with friends, the more likely to use more alcohol. 
 
-## Refined model and the predictive power
+## Refined model and the predictive power 
 
 ```{r}
 m2 <- glm(high_use ~ sex + absences + goout, data = alc, family = "binomial")

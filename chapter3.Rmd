@@ -58,8 +58,8 @@ Males use more alcohol, the more absences the more likely to use more alcohol, a
 ```{r}
 m2 <- glm(high_use ~ sex + absences + goout, data = alc, family = "binomial")
 summary(m2)
-coef(m2)
-OR <- coef(m2) %>% exp()
-CI <- confint(m2) %>% exp()
-cbind(OR, CI)
+probabilities <- predict(m2, type = "response")
+alc <- mutate(alc, probability = probabilities)
+alc <- mutate(alc, prediction = probability > 0.5)
+table(high_use = alc$high_use, prediction = alc$prediction)
 ```

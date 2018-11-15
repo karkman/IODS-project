@@ -61,5 +61,5 @@ summary(m2)
 probabilities <- predict(m2, type = "response")
 alc <- mutate(alc, probability = probabilities)
 alc <- mutate(alc, prediction = probability > 0.5)
-table(high_use = alc$high_use, prediction = alc$prediction)
+table(high_use = alc$high_use, prediction = alc$prediction) %>% prop.table() %>% addmargins()
 ```

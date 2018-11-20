@@ -1,14 +1,11 @@
----
-output:
-  html_document: default
-  pdf_document: default
----
-# Clusteriung and classification
+
+# Clustering and classification
 
 ## Load the data
 Load the data from the MASS package and explore the structure and dimensions
 ```{r}
 library(dplyr)
+library(ggplot2)
 library(MASS)
 data("Boston")
 str(Boston)
@@ -46,8 +43,6 @@ n <- nrow(boston_scaled)
 ind <- sample(n,  size = n * 0.8)
 train <- boston_scaled[ind,]
 test <- boston_scaled[-ind,]
-correct_classes <- test$crime
-test <- dplyr::select(test, -crime)
 ```
 
 ## Linear discriminant analysis
@@ -56,3 +51,41 @@ lda.fit <- lda(crime~., data=train)
 classes <- as.numeric(train$crime)
 plot(lda.fit, dimen=2, col=classes)
 ```
+
+## Predictions from the LDA
+First we save the correct classess in the test set and remove it from the data. Then we predict the crime rate in the test set using the model from ther train set and cross-tabulate it with the correct classes.
+```{r}
+correct_classes <- test$crime
+test <- dplyr::select(test, -crime)
+lda.pred <- predict(lda.fit, newdata=test)
+table(correct = correct_classes, predicted = lda.pred$class)
+```
+The model predicted quite well the crime categories. Probably with fewer classes, e.g. 3, the result would have been even better.
+
+## Euclidean distance and k-means clustering
+```{r}
+data("Boston")
+boston_scaled <- scale(Boston)
+boston_euk_dist <- dist(boston_scaled)
+```
+
+Then we can run the k-means clustering with 3 clusters and visualise the result with few relevant variables. 
+```{r, fig.width=14, fig.height=10}
+km <-kmeans(boston_scaled, centers = 3)
+pairs(boston_scaled[,6:10], col = km$cluster)
+```
+It seems that 3 clusters might not be the best, so we can investigate the optimal number of clusters. 
+```{r}
+set.seed(123)
+
+k_max <- 10
+twcss <- sapply(1:k_max, function(k){kmeans(boston_scaled, k)$tot.withinss})
+qplot(x = 1:k_max, y = twcss, geom = 'line')
+```
+  
+It seems that 2 is the most optimal number of clusters, so let's visualise that on the same variables. 
+```{r, fig.width=14, fig.height=10}
+km <-kmeans(boston_scaled, centers = 2)
+pairs(boston_scaled[,6:10], col = km$cluster)
+```
+**Looks better.**

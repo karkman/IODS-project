@@ -1,4 +1,53 @@
----
-title: "Chapter 4"
-output: html_document
----
+# Clusteriung and classification
+
+## Load the data
+Load the data from the MASS package and explore the structure and dimensions
+```{r}
+library(dplyr)
+library(MASS)
+data("Boston")
+str(Boston)
+dim(Boston)
+```
+The `Boston` dataset is a data frame with 506 rows and 14 columns. The columns present different housing values in the suburbs of Boston.  
+
+## Graphical overview of data
+```{r, fig.width=14, fig.height=10}
+pairs(Boston)
+summary(Boston)
+```
+
+There's both continuous and binary variables in the data.  Some of the varibles are highly correlated, either negatively, such as lower status of the population (`lstat`) and median value of owner-occupied homes in \$1000 (`medv`), or positively, such as full-value property-tax rate per \$10,000 (`tax`) and proportion of non-retail business acres per town (`indus`).  
+However, they are not all normally distributed or have the same variance which are the assumptions for LDA. So we need to scale the variables.
+
+## Standardization and categorize the crime rate
+We scale the values to have a mean of 0 and standard deviation of 1. 
+```{r}
+boston_scaled <- scale(Boston)
+boston_scaled <- as.data.frame(boston_scaled)
+apply(boston_scaled,2, sd, na.rm=TRUE)
+summary(boston_scaled)
+```
+Then we use the `quantile` function to break the crime rates to 4 bins and categorize the crime rates to 4 different categories. Then we remove the original crime rate variuable and substitute it with the new categorial variables.
+```{r}
+bins <- quantile(boston_scaled$crim)
+crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE, labels = c("low", "med_low", "med_high", "high"))
+boston_scaled <- dplyr::select(boston_scaled, -crim)
+boston_scaled <- data.frame(boston_scaled, crime)
+```
+After that we divide the data to `test` and `train` sets, with 80 % of the data going to `train` set. We also save the correct classes from the `test` set and remove the `crime` variable from it.
+```{r}
+n <- nrow(boston_scaled)
+ind <- sample(n,  size = n * 0.8)
+train <- boston_scaled[ind,]
+test <- boston_scaled[-ind,]
+correct_classes <- test$crime
+test <- dplyr::select(test, -crime)
+```
+
+## Linear discriminant analysis
+```{r}
+lda.fit <- lda(crime~., data=train)
+classes <- as.numeric(train$crime)
+plot(lda.fit, dimen=2, col=classes)
+```

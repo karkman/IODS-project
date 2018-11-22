@@ -118,3 +118,4 @@ lda.arrows(lda_boston, myscale = 2, tex=1)
 ```
 
 The variables having the bggest impact are `tax`and `rad`separating clusters 1 and 2 from the others. From the remaining variables `zn` separates clusters 3, 4 and 5 from each other. 
+

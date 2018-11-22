@@ -89,3 +89,32 @@ km <-kmeans(boston_scaled, centers = 2)
 pairs(boston_scaled[,6:10], col = km$cluster)
 ```
 **Looks better.**
+
+## Bonus
+Reload the dataset and standardize it. 
+```{r}
+data("Boston")
+boston_scaled <- as.data.frame(scale(Boston))
+```
+K-means clustering with 5 clusters and LDA on these 5 clusters.
+```{r}
+km <- kmeans(boston_scaled, centers=5)
+boston_scaled <- mutate(boston_scaled, cluster=km$cluster)
+lda_boston <- lda(cluster ~., data=boston_scaled)
+```
+  
+Plot the results.
+```{r, fig.height=10, fig.width=14}
+lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0.75, choices = c(1,2)){
+  heads <- coef(x)
+  arrows(x0 = 0, y0 = 0, 
+         x1 = myscale * heads[,choices[1]], 
+         y1 = myscale * heads[,choices[2]], col=color, length = arrow_heads)
+  text(myscale * heads[,choices], labels = row.names(heads), 
+       cex = tex, col=color, pos=3)
+}
+plot(lda_boston, dimen=2, col=boston_scaled$cluster)
+lda.arrows(lda_boston, myscale = 2, tex=1)
+```
+
+The variables having the bggest impact are `tax`and `rad`separating clusters 1 and 2 from the others. From the remaining variables `zn` separates clusters 3, 4 and 5 from each other. 

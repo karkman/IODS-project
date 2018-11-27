@@ -1,9 +1,6 @@
 # Dimensionality reduction techniques
 
-## Load the data and explore it
+## Start from here
 
 ```{r}
-human <- read.table("data/human.txt", sep="\t", header=TRUE)
-str(human)
 ```
-The human dataset 

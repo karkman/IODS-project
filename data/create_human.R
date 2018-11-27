@@ -32,3 +32,17 @@ human <- inner_join(hd,gii , by="Country")
 str(human)
 write.table(human, file="Work/IODS-project/data/human.txt", sep="\t", col.names = TRUE)
 # And that's it.
+
+## Second part of the data wranling
+
+# Read in the data
+human <- read.table("Work/IODS-project/data/human.txt", sep="\t", header=TRUE)
+str(human)
+
+# mutate the data
+library(stringr)
+human$GNI <- str_replace(human$GNI, pattern=",", replace ="") %>% as.numeric()
+keep_columns <- c("Country", "Pop2EduF", "LabFRateF", "ExpEdu", "LifeExp", "GNI", "MatMort", "AdolBirth", "PercInParl")
+human <- dplyr::select(human, one_of(keep_columns))
+human <- filter(human, complete.cases(human)==TRUE)
+human$Country

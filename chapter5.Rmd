@@ -1,6 +1,62 @@
 # Dimensionality reduction techniques
 
-## Start from here
+## Load the data and linraries needed
 
 ```{r}
+library(dplyr)
+library(GGally)
+human <- read.table("data/human.txt", row.names = 1, header=TRUE, sep="\t")
+str(human)
 ```
+Data frame looks as it should look.
+
+## Graphical overview
+
+```{r, fig.width=10, fig.width=8}
+ggpairs(human)
+summary(human)
+```
+Most of the variables are close to normally distributed, except maternal mortality, GNI and adolescent birth rate which resemble more poisson distribution. There clear correlations between some of the variables, such as expected education and life expectancy ansd maternal mortality and adolescent birth rate. The variance in GNI is very large compared to the other variables.
+
+## PCA on unscaled data
+```{r, fig.width=12, fig.height=12}
+pca_human <- prcomp(human)
+s <- summary(pca_human)
+pca_pr <- round(100*s$importance[2, ], digits = 1)
+pc_lab <- paste0(names(pca_pr), " (", pca_pr, "%)")
+biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2])
+```
+Due to the large variation in GNI, we need to scale the data to get some meaningful results.
+
+## Standardized data and PCA
+```{r, fig.width=12, fig.height=12}
+human_scaled <- scale(human)
+pca_human <- prcomp(human_scaled)
+s <- summary(pca_human)
+pca_pr <- round(100*s$importance[2, ], digits = 1)
+pca_pr
+pc_lab <- paste0(names(pca_pr), " (", pca_pr, "%)")
+biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2])
+```
+The scaling definitely made a difference, the differences between the country are not only defined based on the differences on the GNI index.  
+Most of the variation (PC1, 56.1 %) can be explained with the educational status of the population, especially of the women, life expectance and GNI, that negatively correlate with  maternal mortality and adolescent birth rate. The second axis (PC2, 16.5 %) shows the difference of women working and their percentage in parlament.
+
+## Tea dataset
+```{r, fig.height=10, fig.width=12}
+library(FactoMineR)
+library(tidyr)
+data(tea)
+str(tea)
+dim(tea)
+gather(tea) %>% ggplot(aes(value)) + geom_bar() + facet_wrap("key", scales = "free") + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+```
+We'll select few of the variables for the Multiple Correspondence Analysis.
+```{r, fig.height=8, fig.width=10}
+keep_columns <- c("home", "friends", "Tea", "how", "sex")
+tea_time <- dplyr::select(tea, one_of(keep_columns))
+mca <- MCA(tea_time, graph = FALSE)
+summary(mca)
+plot(mca, invisible=c("none"), habillage = "quali")
+```
+Based on the MCA analysis, men drink green and black tea unpacked home alone.

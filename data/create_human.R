@@ -45,4 +45,12 @@ human$GNI <- str_replace(human$GNI, pattern=",", replace ="") %>% as.numeric()
 keep_columns <- c("Country", "Pop2EduF", "LabFRateF", "ExpEdu", "LifeExp", "GNI", "MatMort", "AdolBirth", "PercInParl")
 human <- dplyr::select(human, one_of(keep_columns))
 human <- filter(human, complete.cases(human)==TRUE)
-human$Country
+
+# The last 7 rows relate to regions and need to be removed
+human <- head(human, -7)
+# Country as row name and remove the country column
+row.names(human) <- human$Country
+human <- dplyr::select(human, -Country)
+
+# Save the data
+write.table(human, file="Work/IODS-project/data/human.txt", row.names = TRUE, col.names = TRUE, sep="\t")

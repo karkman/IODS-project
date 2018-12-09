@@ -95,7 +95,8 @@ ggplot(RATSL8S1, aes(x = Group, y = mean)) +
 ```
 
 ### Test group differences
-Seems obvious thst there's differences between groups. Let's still test that using analysis of variance. 
+Seems obvious that there's differences between groups. But it mainly comes from the starting weight. 
+We can still test the difference between groups. 
 
 ```{r}
 RATS_lm <- aov(mean ~ Group, data = RATSL8S1)
@@ -107,8 +108,6 @@ As expected there was a difference between groups. We can do a *post hoc* test t
 ```{r}
 TukeyHSD(RATS_lm)
 ```
-
-There was a clear difference between all groups.
 
 ## BPRS data
 Read in the data and convert the `treatment`and `subject` columns to factors.

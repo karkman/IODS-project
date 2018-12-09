@@ -225,7 +225,7 @@ ggplot(RATSL8S1, aes(x = Group, y = mean)) +
 </div>
 <div id="test-group-differences" class="section level3">
 <h3>Test group differences</h3>
-<p>Seems obvious thst there’s differences between groups. Let’s still test that using analysis of variance.</p>
+<p>Seems obvious that there’s differences between groups. But it mainly comes from the starting weight. We can still test the difference between groups.</p>
 <pre class="r"><code>RATS_lm &lt;- aov(mean ~ Group, data = RATSL8S1)
 summary(RATS_lm)</code></pre>
 <pre><code>##             Df Sum Sq Mean Sq F value   Pr(&gt;F)    
@@ -245,7 +245,6 @@ summary(RATS_lm)</code></pre>
 ## 2-1 185.73864 159.35462 212.1227 0.00e+00
 ## 3-1 262.07955 238.21430 285.9448 0.00e+00
 ## 3-2  76.34091  46.57572 106.1061 4.94e-05</code></pre>
-<p>There was a clear difference between all groups.</p>
 </div>
 </div>
 <div id="bprs-data" class="section level2">
